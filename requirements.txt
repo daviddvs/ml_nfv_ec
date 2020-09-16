@@ -1,0 +1,12 @@
+pandas
+matplotlib
+scipy
+numpy
+sklearn
+pydotplus
+pickle-mixin
+datetime
+flask
+connexion
+requests
+http
