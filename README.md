@@ -15,7 +15,8 @@ pip3 install -r requirements.txt
 ```
 2. Backend deployment
 ```
-python3 ./backend/server.py
+cd ./backend
+python3 server.py
 ```
 3. Run the Client
 ```
