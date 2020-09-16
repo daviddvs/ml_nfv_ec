@@ -10,18 +10,18 @@ There are two elements in the architecture:
 This repo must be cloned in both Client and Backend machines.
 
 1. Run the following command to set up python3 modules in Client/Backend.
-```
-pip3 install -r requirements.txt
-```
+    ```
+    pip3 install -r requirements.txt
+    ```
 2. Backend deployment
-```
-cd ./backend
-python3 server.py
-```
+    ```
+    cd ./backend
+    python3 server.py
+    ```
 3. Run the Client
-```
-python3 ./cli/rest_test.py
-```
+    ```
+    python3 ./cli/rest_test.py
+    ```
 
 ## Check machine status
 These are the main commands to check Backend machine status. More infor [here](stress.md).
