@@ -19,6 +19,7 @@ import datetime
 
 #%matplotlib inline
 class machine_learning:
+
     def confusion_matrix(predicted, actual, threshold):
         if len(predicted) != len(actual): return -1
         tp = 0.0
@@ -75,12 +76,35 @@ class machine_learning:
         '''
 
 
-    def rocksMines_dataset(N=1): # DecisionTreeClassifier
-
+    def predict(N=1):
+        
         # Load dataset
         url="https://archive.ics.uci.edu/ml/machine-learning-databases/undocumented/connectionist-bench/sonar/sonar.all-data"
         df = pd.read_csv(url,header=None)
+
+        # Start prediction
+        ml=machine_learning()
+        return ml.rocksMines_dataset(url,N)
+
+
+    def predict_data(N=1, upfile=None):
         
+        # Check file (can be deleted)
+        if(upfile != None):
+            print("File received!")
+        else:
+            print("No file received!")
+        
+        # Start prediction
+        ml=machine_learning()
+        return ml.rocksMines_dataset(upfile,N)
+
+
+    def rocksMines_dataset(self, uof, N=1): # DecisionTreeClassifier, uof= url or file
+        
+        # Load dataset
+        df = pd.read_csv(uof,header=None)
+
         # Divide dataset into training and test samples     
         df[60]=np.where(df[60]=='R',0,1)
         #print(df.describe())
@@ -185,4 +209,4 @@ class machine_learning:
 #wines_dataset()
 #pred_time = machine_learning.rocksMines_dataset()
 #clustering()
-
+#machine_learning.predict()

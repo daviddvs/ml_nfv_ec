@@ -13,7 +13,7 @@ basePath: "/api"
 paths:
   /ml_predict:
     get:
-      operationId: "ml_predict.machine_learning.rocksMines_dataset"
+      operationId: "ml_predict.machine_learning.predict"
       parameters:
         - name: N
           description: "Number of predictions"
@@ -22,6 +22,36 @@ paths:
           required: true
       produces:
         - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              properties:
+                responsetime:
+                  type: string
+                  description: The response time.
+                elements:
+                  type: string
+                  description: The number of elementse.
+  /ml_predict_data:
+    post:
+      operationId: "ml_predict.machine_learning.predict_data"
+      parameters:
+        - name: N
+          description: "Number of predictions"
+          in: query
+          type: integer
+          required: true
+        - in: formData
+          name: upfile
+          type: file
+          description: "The file to upload."
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
       responses:
         200:
           description: OK
