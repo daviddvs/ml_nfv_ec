@@ -5,14 +5,21 @@ import datetime
 import concurrent.futures
 
 rep=10
-num=1000
-url="http://10.98.1.26:5000/api/ml_predict?N="+str(num)
+num=100
+url="http://10.98.1.26:5000/api/ml_predict_data?N="+str(num)
 data=""
 
+def get_data():
+    url_data="https://archive.ics.uci.edu/ml/machine-learning-databases/undocumented/connectionist-bench/sonar/sonar.all-data"
+    res = requests.get(url_data, allow_redirects=True)
+    content = res.content
+    return content
+
 def get_prediction(i=0):
+    content = get_data()
     timestamp = datetime.datetime.now().timestamp()
     try:
-        response = requests.get(url, data=data)
+        response = requests.post(url, files = {'upfile': content}) # upfile is the name of the var
     except http.client.HTTPException as e:
         print(e)
     now = datetime.datetime.now().timestamp()
@@ -34,3 +41,4 @@ def parallel_loop():
 
 #standard_loop()
 parallel_loop()
+#get_data()
