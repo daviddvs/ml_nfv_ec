@@ -42,11 +42,10 @@ class machine_learning:
         return rtn
 
 
-    def wines_dataset(): # DecisionTreeRegressor
+    def regressor(self, uof, N=1): # Wines dataset, uof = url or file, DecisionTreeRegressor
 
         # Load dataset
-        url = "http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
-        w_df = pd.read_csv(url,header=0,sep=';')
+        w_df = pd.read_csv(uof,header=0,sep=';')
 
         # Divide dataset into training and test samples
         train, test = train_test_split(w_df, test_size = 0.3)
@@ -61,33 +60,30 @@ class machine_learning:
 
         # Prediction
         timestamp = datetime.datetime.now().timestamp()
-        #p_train = model.predict(x_train)
-        p_test = model.predict(x_test)
+        for i in range(1,N+1):
+            p_test = model.predict(x_test)
         now = datetime.datetime.now().timestamp()
         prediction_time_ms = (float(now) - float(timestamp))*1000
-        print('Prediction finished in {0:.2f} ms'.format(prediction_time_ms))
-
-        '''
-        # View the tree (the tree will be saved to wines2.pdf in your current directory)
-        feature_names = [key for key in w_df.iloc[0:,0:11]]
-        dot_data = tree.export_graphviz(model,out_file=None,feature_names=feature_names) 
-        graph = pydotplus.graph_from_dot_data(dot_data) 
-        #graph.write_pdf("wines2.pdf")
-        '''
+        elem = N*len(x_test)
+        print('Prediction finished in {0:.2f} ms for {1} elements'.format(prediction_time_ms, elem))
+        return [prediction_time_ms, elem] #return an array for the REST API
 
 
-    def predict(N=1):
+    def predict(N=1,typ=0):
         
         # Load dataset
-        url="https://archive.ics.uci.edu/ml/machine-learning-databases/undocumented/connectionist-bench/sonar/sonar.all-data"
-        df = pd.read_csv(url,header=None)
+        url_classifier="https://archive.ics.uci.edu/ml/machine-learning-databases/undocumented/connectionist-bench/sonar/sonar.all-data"
+        url_regressor="http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
 
         # Start prediction
+        print("Prediction type: "+str(typ))
         ml=machine_learning()
-        return ml.rocksMines_dataset(url,N)
+        if(typ==0):
+            return ml.classifier(url_classifier,N)
+        else:
+            return ml.regressor(url_regressor,N)
 
-
-    def predict_data(N=1, upfile=None):
+    def predict_data(N=1, upfile=None, typ=0):
         
         # Check file (can be deleted)
         if(upfile != None):
@@ -97,11 +93,14 @@ class machine_learning:
         
         # Start prediction
         ml=machine_learning()
-        return ml.rocksMines_dataset(upfile,N)
+        if(typ==0):
+            return ml.classifier(upfile,N)
+        else:
+            return ml.regressor(upfile,N)
 
 
-    def rocksMines_dataset(self, uof, N=1): # DecisionTreeClassifier, uof= url or file
-        
+    def classifier(self, uof, N=1): # Rocks/Mines dataset, uof= url or file, DecisionTreeClassifier
+       
         # Load dataset
         df = pd.read_csv(uof,header=None)
 
@@ -120,7 +119,6 @@ class machine_learning:
         
         # Prediction and ROC Curve
         timestamp = datetime.datetime.now().timestamp()
-        #p_train = model.predict(x_train)
         for i in range(1,N+1):
             p_test = model.predict(x_test)
         now = datetime.datetime.now().timestamp()
