@@ -8,5 +8,4 @@ pickle-mixin
 datetime
 flask
 connexion
-requests
-http
+requestss
