@@ -36,6 +36,7 @@ def get_opts():
             rep = int(arg)
         elif opt in ("-t", "--typ"):
             typ = str(arg)
+    print("Algorithm: "+typ)
     if(typ=="regressor"):
         t="1"
     else:
@@ -44,7 +45,6 @@ def get_opts():
 
 
 def get_data(): #typ= classifier, regressor
-    print("Algorithm: "+typ)
     if(typ=="classifier"):
         url_data=url_classifier
     elif (typ=="regressor"):

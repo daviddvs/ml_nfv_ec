@@ -118,12 +118,15 @@ class machine_learning:
         model = pickle.load(open(filename, 'rb'))
         
         # Prediction and ROC Curve
-        timestamp = datetime.datetime.now().timestamp()
         for i in range(1,N+1):
-            p_test = model.predict(x_test)
+            x_test = np.concatenate((x_test,x_test), axis=0)
+        timestamp = datetime.datetime.now().timestamp()
+        #for i in range(1,N+1):
+        p_test = model.predict(x_test)
         now = datetime.datetime.now().timestamp()
         prediction_time_ms = (float(now) - float(timestamp))*1000
-        elem = N*len(x_test)
+        #elem = N*len(x_test)
+        elem = len(x_test)
         print('Prediction finished in {0:.2f} ms for {1} elements'.format(prediction_time_ms, elem))
         return [prediction_time_ms, elem] #return an array for the REST API
 
@@ -203,8 +206,8 @@ class machine_learning:
         plt.yticks(())
         plt.show()
         '''
+#machine_learning.clustering()
+#url_classifier="https://archive.ics.uci.edu/ml/machine-learning-databases/undocumented/connectionist-bench/sonar/sonar.all-data"
+#ml = machine_learning()
+#ml.classifier(uof=url_classifier, N=10)
 
-#wines_dataset()
-#pred_time = machine_learning.rocksMines_dataset()
-#clustering()
-#machine_learning.predict()
