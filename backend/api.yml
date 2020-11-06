@@ -50,7 +50,7 @@ paths:
           type: integer
           required: true
         - name: typ
-          description: "Number of predictions"
+          description: "Type of ML algorithm"
           in: query
           type: integer
           required: false

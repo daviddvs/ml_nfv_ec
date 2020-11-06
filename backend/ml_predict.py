@@ -59,12 +59,13 @@ class machine_learning:
         model = pickle.load(open(filename, 'rb'))
 
         # Prediction
-        timestamp = datetime.datetime.now().timestamp()
         for i in range(1,N+1):
-            p_test = model.predict(x_test)
+            x_test = np.concatenate((x_test,x_test), axis=0)
+        timestamp = datetime.datetime.now().timestamp()    
+        p_test = model.predict(x_test)
         now = datetime.datetime.now().timestamp()
         prediction_time_ms = (float(now) - float(timestamp))*1000
-        elem = N*len(x_test)
+        elem = len(x_test)
         print('Prediction finished in {0:.2f} ms for {1} elements'.format(prediction_time_ms, elem))
         return [prediction_time_ms, elem] #return an array for the REST API
 
@@ -95,8 +96,10 @@ class machine_learning:
         ml=machine_learning()
         if(typ==0):
             return ml.classifier(upfile,N)
-        else:
+        elif(typ==1):
             return ml.regressor(upfile,N)
+        else:
+            return ml.clustering(N)
 
 
     def classifier(self, uof, N=1): # Rocks/Mines dataset, uof= url or file, DecisionTreeClassifier
@@ -121,17 +124,15 @@ class machine_learning:
         for i in range(1,N+1):
             x_test = np.concatenate((x_test,x_test), axis=0)
         timestamp = datetime.datetime.now().timestamp()
-        #for i in range(1,N+1):
         p_test = model.predict(x_test)
         now = datetime.datetime.now().timestamp()
         prediction_time_ms = (float(now) - float(timestamp))*1000
-        #elem = N*len(x_test)
         elem = len(x_test)
         print('Prediction finished in {0:.2f} ms for {1} elements'.format(prediction_time_ms, elem))
         return [prediction_time_ms, elem] #return an array for the REST API
 
 
-    def clustering(): # The goal is to recognise handwritten digits
+    def clustering(self, N=1): # The goal is to recognise handwritten digits
         
         #Load data
         digits = load_digits()
@@ -154,11 +155,15 @@ class machine_learning:
         clf = pickle.load(open(filename, 'rb'))
 
         # Use test sample to generate predictions
+        for i in range(1,N+1):
+            X_test = np.concatenate((X_test,X_test), axis=0)
         timestamp = datetime.datetime.now().timestamp()
         y_pred = clf.predict(X_test)
         now = datetime.datetime.now().timestamp()
         prediction_time_ms = (float(now) - float(timestamp))*1000
-        print('Prediction finished in {0:.2f} ms'.format(prediction_time_ms))
+        elem = len(X_test)
+        print('Prediction finished in {0:.2f} ms for {1} elements'.format(prediction_time_ms, elem))
+        return [prediction_time_ms, elem]
         #for i in range(10):
             #print_cluster(images_test, y_pred, i)
         #plt.show()
