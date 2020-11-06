@@ -37,27 +37,32 @@ def get_opts():
         elif opt in ("-t", "--typ"):
             typ = str(arg)
     print("Algorithm: "+typ)
-    if(typ=="regressor"):
-        t="1"
-    else:
+    if(typ=="classifier"):
         t="0"
+    elif(typ=="regressor"):
+        t="1"
+    elif(typ=="clustering"):
+        t="2"
+    else:
+        print("Bad syntax err: no such ML algorithm "+typ+". Try classifier, regressor or clustering.")
+        sys.exit(2)
     url="http://"+ip+":5000/api/ml_predict_data?N="+str(num)+"&typ="+t
 
 
 def get_data(): #typ= classifier, regressor
     if(typ=="classifier"):
         url_data=url_classifier
-    elif (typ=="regressor"):
-        url_data=url_regressor
     else:
-        print("Bad syntax err: no such ML algorithm. Try classifier or regressor.")
-        sys.exit(2)
+        url_data=url_regressor
     res = requests.get(url_data, allow_redirects=True)
     content = res.content
     return content
 
 def get_prediction(i=0):
-    content = get_data()
+    if(typ=="clustering"):
+        content=None
+    else:
+        content = get_data()
     timestamp = datetime.datetime.now().timestamp()
     try:
         response = requests.post(url, files = {'upfile': content}) # upfile is the name of the var
