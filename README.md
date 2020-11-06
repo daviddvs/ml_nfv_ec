@@ -21,6 +21,7 @@ This repo must be cloned in both Client and Backend machines.
 3. Run the Client
     ```
     python3 ./cli/rest_test.py
+    python3 ./cli/rest_test_data.py # if file is sent with data to predict 
     ```
 
 ## Check machine status
