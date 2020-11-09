@@ -5,7 +5,7 @@ import datetime
 import concurrent.futures
 
 rep=10
-num=1000
+num=10
 url="http://10.98.1.26:5000/api/ml_predict?N="+str(num)
 data=""
 
