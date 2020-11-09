@@ -9,3 +9,5 @@ datetime
 flask
 connexion
 requests
+paramiko
+scp
