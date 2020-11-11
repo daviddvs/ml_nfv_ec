@@ -131,3 +131,6 @@ dmypy.json
 # Result images and binaries
 mon/results
 mon/plots
+
+# Models dir
+backend/models
