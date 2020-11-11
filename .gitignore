@@ -128,5 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Models dir
-backend/models/
+# Result images and binaries
+mon/results
+mon/plots
