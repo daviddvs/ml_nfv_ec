@@ -1,17 +1,11 @@
 import pandas as pd
-#from pandas import DataFrame
 import numpy as np
-#import pylab
-#import scipy.stats as stats
 import matplotlib
 import matplotlib.pyplot as plt
 from pandas.plotting import scatter_matrix
-#import random
 from sklearn import cluster
-#from sklearn.metrics import roc_curve, auc
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
-#import pydotplus
 from sklearn.datasets import load_digits
 from sklearn.preprocessing import scale
 import pickle
