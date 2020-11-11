@@ -3,11 +3,9 @@ matplotlib
 scipy
 numpy
 sklearn
-pydotplus
 pickle-mixin
 datetime
 flask
 connexion
-requests
 paramiko
 scp
