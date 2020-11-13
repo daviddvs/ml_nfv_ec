@@ -131,16 +131,20 @@ class machine_learning:
         # Update model
         self.update_model(filename)
 
-update_regressor=True
-update_classifier=True
-update_clustering=True
+def main():
+    update_regressor=True
+    update_classifier=True
+    update_clustering=True
 
-ml=machine_learning()
+    ml=machine_learning()
 
-if (update_regressor):
-    ml.regressor()
-if (update_classifier):
-    ml.classifier()
-if (update_clustering):
-    ml.clustering()
+    if (update_regressor):
+        ml.regressor()
+    if (update_classifier):
+        ml.classifier()
+    if (update_clustering):
+        ml.clustering()
+
+if __name__=="__main__":
+    main()
 
