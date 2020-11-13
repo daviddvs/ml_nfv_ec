@@ -18,6 +18,9 @@ class machine_learning:
     
     def __init__(self):
         self.model_dir="models"
+        if not os.path.exists(self.model_dir):
+            os.makedirs(model_dir)
+            print("INFO: Directory "+model_dir+" created.")
     
     def update_model(self,filename):
 
