@@ -56,7 +56,7 @@ def ssh_session(hostname, username, password):
 
 def get_load_pct(ssh):
     # Packet "sysstat" required in target machine
-    cmd = "sar -u 0"
+    cmd = "sar -u 1 1"
     ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command(cmd)
     idle = float(ssh_stdout.read().decode("utf-8").split("\n")[3].split()[7])
     return round(float(100-idle),2)
