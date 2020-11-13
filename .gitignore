@@ -129,8 +129,8 @@ dmypy.json
 .pyre/
 
 # Result images and binaries
-mon/results
-mon/plots
+*/results
+*/plots
 
 # Models dir
 backend/models
