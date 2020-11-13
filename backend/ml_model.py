@@ -11,7 +11,7 @@ from sklearn.preprocessing import scale
 import pickle
 from paramiko import SSHClient
 from scp import SCPClient
-import sys
+import sys, os
 
 #%matplotlib inline
 class machine_learning:
