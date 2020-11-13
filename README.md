@@ -24,11 +24,13 @@ python3 server.py
 ```
 
 Run the Modeler to create/update models in the Backend.
-Note: server IP must be edited to point to the Backed server.
-Note: 3 models (classifier, regressor and clustering) are updated by default.
+Note: server IP must be edited in `ml_model` to point to the Backed server.
+Note: update interval in seconds
 ```
 cd ~/ml_nfv_ec/backend
-python3 ml_model.py
+python3 model.py --classifier --regressor --clustering -i <update_interval>
+# As an example
+python3 model.py --classifier --regressor --clustering -i 5
 ```
 
 Run the Monitor. 
