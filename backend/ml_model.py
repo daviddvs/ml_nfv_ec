@@ -13,7 +13,6 @@ from paramiko import SSHClient
 from scp import SCPClient
 import sys, os
 
-#%matplotlib inline
 class machine_learning:
     
     def __init__(self):

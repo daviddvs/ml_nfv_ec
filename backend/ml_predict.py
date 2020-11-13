@@ -9,7 +9,6 @@ from sklearn.preprocessing import scale
 import pickle
 import datetime
 
-#%matplotlib inline
 class machine_learning:
 
     def confusion_matrix(predicted, actual, threshold):
