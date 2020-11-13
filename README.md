@@ -25,7 +25,7 @@ python3 server.py
 
 Run the Modeler to create/update models in the Backend.
 Note: server IP must be edited in `ml_model` to point to the Backed server.
-Note: update interval in seconds
+Note: update interval in seconds and press CTRL+C to exit.
 ```
 cd ~/ml_nfv_ec/backend
 python3 model.py --classifier --regressor --clustering -i <update_interval>
@@ -35,7 +35,8 @@ python3 model.py --classifier --regressor --clustering -i 5
 
 Run the Monitor. 
 This will gather CPU, RAM and bitrate info from the Backend machine and it will the save into a results dir.
-Backedn machine IP must be edited in the file.
+Backend machine IP must be edited in the file.
+Note: press CTRL+C to end monitoring process and save data.
 ```
 cd ~/ml_nfv_ec/mon
 python3 mon.py
@@ -69,6 +70,9 @@ These are the main commands to check Backend machine status. More infor [here](s
 cat /proc/loadavg  | awk '{load_pct=$1*100.00} END {print load_pct}'
 sudo apt install sysstat
 sar -u 1
+sar -u 1 1 # CPU
+free # RAM
+sar -n DEV 1 1 # bitrate
 mpstat
 mpstat -P ALL
 htop
