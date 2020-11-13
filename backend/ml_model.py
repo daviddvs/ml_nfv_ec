@@ -1,10 +1,7 @@
 import pandas as pd
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-from pandas.plotting import scatter_matrix
 from sklearn import cluster
-from sklearn.model_selection import train_test_split, cross_val_score, KFold
+from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
 from sklearn.datasets import load_digits
 from sklearn.preprocessing import scale
@@ -49,22 +46,6 @@ class machine_learning:
         y_train = train[['quality']]
         x_test = test.iloc[0:,0:11]
         y_test = test[['quality']]
-
-        # Use all data for cross validation
-        x_data = w_df.iloc[0:,0:11]
-        y_data = w_df[['quality']]
-
-        '''
-        # Cross validation
-        crossvalidation = KFold(n_splits=5,shuffle=True, random_state=1)
-        for depth in range(1,10):
-            model = tree.DecisionTreeRegressor(
-            max_depth=depth, random_state=0)
-            if model.fit(x_data,y_data).tree_.max_depth < depth:
-                break
-            score = np.mean(cross_val_score(model, x_data, y_data,scoring='neg_mean_squared_error', cv=crossvalidation, n_jobs=1))
-            #print ('Depth: %i Accuracy: %.3f' % (depth,score))
-        '''
 
         # Decision Tree Model: We see that the best depth is 3 - 4
         model = DecisionTreeRegressor(max_depth=3)
@@ -132,21 +113,3 @@ class machine_learning:
 
         # Update model
         self.update_model(filename)
-
-def main():
-    update_regressor=True
-    update_classifier=True
-    update_clustering=True
-
-    ml=machine_learning()
-
-    if (update_regressor):
-        ml.regressor()
-    if (update_classifier):
-        ml.classifier()
-    if (update_clustering):
-        ml.clustering()
-
-if __name__=="__main__":
-    main()
-
