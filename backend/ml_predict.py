@@ -35,30 +35,22 @@ class machine_learning:
 
     def regressor(self, uof, N=1): # Wines dataset, uof = url or file, DecisionTreeRegressor
 
-        # Load dataset
-        w_df = pd.read_csv(uof,header=0,sep=';')
-
-        # Divide dataset into training and test samples
-        train, test = train_test_split(w_df, test_size = 0.3)
-        x_train = train.iloc[0:,0:11]
-        y_train = train[['quality']]
-        x_test = test.iloc[0:,0:11]
-        y_test = test[['quality']]
-
         # Load the model from disk
         filename = 'models/decisionTreeRegressor_model.p'
         model = pickle.load(open(filename, 'rb'))
 
-        # Prediction
-        for i in range(1,N+1):
-            x_test = np.concatenate((x_test,x_test), axis=0)
+        # Get content (reshape to N rows and 11 cols)
+        content = np.array(uof['upfile']).reshape((N,11))
+     
+        # Predict
         timestamp = datetime.datetime.now().timestamp()    
-        p_test = model.predict(x_test)
+        p_test = model.predict(content)
         now = datetime.datetime.now().timestamp()
         prediction_time_ms = (float(now) - float(timestamp))*1000
-        elem = len(x_test)
+        elem = len(content)
         print('Prediction finished in {0:.2f} ms for {1} elements'.format(prediction_time_ms, elem))
         return [prediction_time_ms, elem] #return an array for the REST API
+        
 
 
     def predict(N=1,typ=0):
@@ -95,30 +87,19 @@ class machine_learning:
 
     def classifier(self, uof, N=1): # Rocks/Mines dataset, uof= url or file, DecisionTreeClassifier
        
-        # Load dataset
-        df = pd.read_csv(uof,header=None)
-
-        # Divide dataset into training and test samples     
-        df[60]=np.where(df[60]=='R',0,1)
-        #print(df.describe())
-        train, test = train_test_split(df, test_size = 0.3)
-        x_train = train.iloc[0:,0:60]
-        y_train = train[[60]]
-        x_test = test.iloc[0:,0:60]
-        y_test = test[[60]]
-
         # Load the model from disk
         filename = 'models/decisionTreeClassifier_model.p'
         model = pickle.load(open(filename, 'rb'))
         
-        # Prediction and ROC Curve
-        for i in range(1,N+1):
-            x_test = np.concatenate((x_test,x_test), axis=0)
+        # Get content (reshape to N rows and 60 cols)
+        content = np.array(uof['upfile']).reshape((N,60))
+
+        #Predict
         timestamp = datetime.datetime.now().timestamp()
-        p_test = model.predict(x_test)
+        p_test = model.predict(content)
         now = datetime.datetime.now().timestamp()
         prediction_time_ms = (float(now) - float(timestamp))*1000
-        elem = len(x_test)
+        elem = len(content)
         print('Prediction finished in {0:.2f} ms for {1} elements'.format(prediction_time_ms, elem))
         return [prediction_time_ms, elem] #return an array for the REST API
 
