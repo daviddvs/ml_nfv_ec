@@ -4,9 +4,11 @@ import http
 import datetime
 import concurrent.futures
 import pickle
+import pandas as pd
+from sklearn.model_selection import train_test_split
+import numpy as np
 
 ip="10.98.1.26"
-data=""
 url_classifier="https://archive.ics.uci.edu/ml/machine-learning-databases/undocumented/connectionist-bench/sonar/sonar.all-data"
 url_regressor="http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
 
@@ -26,7 +28,7 @@ def get_opts():
             print("Options:")
             print("\t-h : display this menu.")
             print("\t-n <number_of_prediction_elements>: set the number of elements (default 1) to predict."+ 
-                    " 63*n for classifier and 480*n for regressor.")
+                    " 63*2^n for classifier and regressor.")
             print("\t-r <number_of_repetitions>: set the number of repetitios (default 1) to predict.")
             print("\t-t <type_of_algorithm>: set the algorithm to classifier/regressor.")
             print("\t-tt <test_type>: set a name for the test.")
@@ -49,25 +51,47 @@ def get_opts():
     else:
         print("Syntax err: no such ML algorithm "+typ+". Try classifier, regressor or clustering.")
         sys.exit(2)
-    url="http://"+ip+":5000/api/ml_predict_data?N="+str(num)+"&typ="+t
+    N=63*pow(2,num)
+    print(N)
+    url="http://"+ip+":5000/api/ml_predict_data?N="+str(N)+"&typ="+t
 
 def get_data(): #typ= classifier, regressor
+    global content
     if(typ=="classifier"):
         url_data=url_classifier
     else:
         url_data=url_regressor
-    res = requests.get(url_data, allow_redirects=True)
-    content = res.content
-    return content
+    # Save csv file if it doesn't exist
+    data_dir="data"
+    file_name=data_dir+"/data_"+typ+".csv"
+    if not os.path.isfile(file_name):
+        if not os.path.exists(data_dir):
+            os.makedirs(data_dir)
+        res = requests.get(url_data, allow_redirects=True)
+        open(file_name, 'wb').write(res.content)
+    # Read csv file and concatenate content
+    nlen=63 # limit number of samples
+    if(typ=="classifier"):
+        cont = pd.read_csv(file_name,header=None)
+        cont[60] = np.where(cont[60]=='R',0,1)
+        train, test = train_test_split(cont, test_size = 0.3)
+        x_test = test.iloc[0:nlen,0:60]
+    else:
+        cont = pd.read_csv(file_name,header=0,sep=';')
+        train, test = train_test_split(cont, test_size = 0.3)
+        x_test = test.iloc[0:nlen,0:11]
+    for i in range(1,num+1):
+            x_test = np.concatenate((x_test,x_test), axis=0)
+    content = x_test#.copy(order='C')
 
 def get_prediction(i=0):
+    global content
     if(typ=="clustering"):
         content=None
-    else:
-        content = get_data()
     timestamp = datetime.datetime.now().timestamp()
     try:
-        response = requests.post(url, files = {'upfile': content}) # upfile is the name of the var
+        #response = requests.post(url, files = {'upfile': content}) # upfile is the name of the var
+        response = requests.post(url, data = {'upfile': content}) # upfile is the name of the var
     except http.client.HTTPException as e:
         print(e)
     now = datetime.datetime.now().timestamp()
@@ -106,6 +130,7 @@ def save_to_file(obj,type_name):
 def main():
     get_opts()
     #standard_loop()
+    get_data()
     t_pred, t_resp, elem = parallel_loop()
     save_to_file(t_pred,"tpred-"+str(elem)+"_"+str(rep))
     save_to_file(t_resp,"tresp-"+str(elem)+"_"+str(rep))
