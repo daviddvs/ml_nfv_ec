@@ -143,6 +143,7 @@ def save_to_file(obj,type_name):
 def main():
     get_opts()
     get_data()
+    print("Sent bytes for each prediction: "+str(sys.getsizeof(content)))
     t_pred, t_resp, elem = parallel_loop()
     save_to_file(t_pred,"tpred-"+str(elem)+"_"+str(rep))
     save_to_file(t_resp,"tresp-"+str(elem)+"_"+str(rep))
