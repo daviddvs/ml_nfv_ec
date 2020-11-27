@@ -10,7 +10,8 @@ from sklearn.datasets import load_digits
 from sklearn.preprocessing import scale
 import numpy as np
 
-ip="10.98.1.26"
+ip="10.98.1.43"
+port="5000"
 url_classifier="https://archive.ics.uci.edu/ml/machine-learning-databases/undocumented/connectionist-bench/sonar/sonar.all-data"
 url_regressor="http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
 
@@ -54,16 +55,14 @@ def get_opts():
         print("Syntax err: no such ML algorithm "+typ+". Try classifier, regressor or clustering.")
         sys.exit(2)
     N=63*pow(2,num)
-    url="http://"+ip+":5000/api/ml_predict_data?N="+str(N)+"&typ="+t
+    url="http://"+ip+":"+port+"/api/ml_predict_data?N="+str(N)+"&typ="+t
 
-def get_data(): #typ= classifier, regressor
+def get_data(): #typ= classifier/regressor/clustering
     global content
-
     if(typ=="classifier"):
         url_data=url_classifier
     else:
         url_data=url_regressor
-
     # Save csv file if it doesn't exist
     if(typ=="classifier" or typ=="regressor"):
         data_dir="data"
@@ -73,7 +72,6 @@ def get_data(): #typ= classifier, regressor
                 os.makedirs(data_dir)
             res = requests.get(url_data, allow_redirects=True)
             open(file_name, 'wb').write(res.content)
-    
     # Read stored csv file or digits
     nlen=63 # limit number of samples
     if(typ=="classifier"):
@@ -91,19 +89,15 @@ def get_data(): #typ= classifier, regressor
         x_train, x_test, y_train, y_test, images_train, images_test = train_test_split(
                 data, digits.target, digits.images, test_size=0.25, random_state=42)
         x_test = x_test[0:63] # x_test is already an np.ndarray object
-
     # Concatenate data to increment samples
     for i in range(1,num+1):
             x_test = np.concatenate((x_test,x_test), axis=0) # return an np.ndarray object
-    content = x_test#.copy(order='C')
+    content = x_test
 
 def get_prediction(i=0):
     global content
-    #if(typ=="clustering"):
-    #    content=None
     timestamp = datetime.datetime.now().timestamp()
     try:
-        #response = requests.post(url, files = {'upfile': content}) # upfile is the name of the var
         response = requests.post(url, data = {'upfile': content}) # upfile is the name of the var
     except http.client.HTTPException as e:
         print(e)
