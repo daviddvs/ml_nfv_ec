@@ -6,6 +6,8 @@ import concurrent.futures
 import pickle
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_digits
+from sklearn.preprocessing import scale
 import numpy as np
 
 ip="10.98.1.26"
@@ -52,42 +54,53 @@ def get_opts():
         print("Syntax err: no such ML algorithm "+typ+". Try classifier, regressor or clustering.")
         sys.exit(2)
     N=63*pow(2,num)
-    print(N)
     url="http://"+ip+":5000/api/ml_predict_data?N="+str(N)+"&typ="+t
 
 def get_data(): #typ= classifier, regressor
     global content
+
     if(typ=="classifier"):
         url_data=url_classifier
     else:
         url_data=url_regressor
+
     # Save csv file if it doesn't exist
-    data_dir="data"
-    file_name=data_dir+"/data_"+typ+".csv"
-    if not os.path.isfile(file_name):
-        if not os.path.exists(data_dir):
-            os.makedirs(data_dir)
-        res = requests.get(url_data, allow_redirects=True)
-        open(file_name, 'wb').write(res.content)
-    # Read csv file and concatenate content
+    if(typ=="classifier" or typ=="regressor"):
+        data_dir="data"
+        file_name=data_dir+"/data_"+typ+".csv"
+        if not os.path.isfile(file_name):
+            if not os.path.exists(data_dir):
+                os.makedirs(data_dir)
+            res = requests.get(url_data, allow_redirects=True)
+            open(file_name, 'wb').write(res.content)
+    
+    # Read stored csv file or digits
     nlen=63 # limit number of samples
     if(typ=="classifier"):
         cont = pd.read_csv(file_name,header=None)
         cont[60] = np.where(cont[60]=='R',0,1)
         train, test = train_test_split(cont, test_size = 0.3)
         x_test = test.iloc[0:nlen,0:60]
-    else:
+    elif(typ=="regressor"):
         cont = pd.read_csv(file_name,header=0,sep=';')
         train, test = train_test_split(cont, test_size = 0.3)
         x_test = test.iloc[0:nlen,0:11]
+    else:
+        digits = load_digits()
+        data = scale(digits.data)
+        x_train, x_test, y_train, y_test, images_train, images_test = train_test_split(
+                data, digits.target, digits.images, test_size=0.25, random_state=42)
+        x_test = x_test[0:63] # x_test is already an np.ndarray object
+
+    # Concatenate data to increment samples
     for i in range(1,num+1):
-            x_test = np.concatenate((x_test,x_test), axis=0)
+            x_test = np.concatenate((x_test,x_test), axis=0) # return an np.ndarray object
     content = x_test#.copy(order='C')
 
 def get_prediction(i=0):
     global content
-    if(typ=="clustering"):
-        content=None
+    #if(typ=="clustering"):
+    #    content=None
     timestamp = datetime.datetime.now().timestamp()
     try:
         #response = requests.post(url, files = {'upfile': content}) # upfile is the name of the var
@@ -129,7 +142,6 @@ def save_to_file(obj,type_name):
 
 def main():
     get_opts()
-    #standard_loop()
     get_data()
     t_pred, t_resp, elem = parallel_loop()
     save_to_file(t_pred,"tpred-"+str(elem)+"_"+str(rep))
