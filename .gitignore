@@ -134,3 +134,6 @@ dmypy.json
 
 # Models dir
 backend/models
+
+# Data dir
+cli/data
