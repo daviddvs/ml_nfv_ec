@@ -31,7 +31,7 @@ class machine_learning:
             # SCPCLient takes a paramiko transport as an argument
             scp = SCPClient(ssh.get_transport())
             # Uploading file to remote path
-            rem_path='~/Documents/ml_nfv_ec/backend/models'
+            rem_path='~/ml_nfv_ec/backend/models'
             scp.put(filename, remote_path=rem_path)
             scp.close()
             print('Model updated in host: '+h["IP"])
