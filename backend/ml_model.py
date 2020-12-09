@@ -6,7 +6,7 @@ from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
 from sklearn.datasets import load_digits
 from sklearn.preprocessing import scale
 import pickle
-from paramiko import SSHClient
+from paramiko import SSHClient, AutoAddPolicy
 from scp import SCPClient
 import sys, os
 
@@ -23,6 +23,7 @@ class machine_learning:
         # Update model in the backend
         ssh = SSHClient()
         ssh.load_system_host_keys()
+        ssh.set_missing_host_key_policy(AutoAddPolicy())
         hostfile = self.model_dir+'/hosts.p'
         hosts = pickle.load(open(hostfile, 'rb'))
         for h in hosts:
