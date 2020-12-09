@@ -23,15 +23,17 @@ class machine_learning:
         # Update model in the backend
         ssh = SSHClient()
         ssh.load_system_host_keys()
-        host="10.98.1.26"
-        ssh.connect(host, username="ubuntu", password="osm2018", allow_agent=False)
-        # SCPCLient takes a paramiko transport as an argument
-        scp = SCPClient(ssh.get_transport())
-        # Uploading file to remote path
-        rem_path='~/ml_nfv_ec/backend/models'
-        scp.put(filename, remote_path=rem_path)
-        scp.close()
-        print('Model updated in hosts: '+host)
+        hostfile = self.model_dir+'/hosts.p'
+        hosts = pickle.load(open(hostfile, 'rb'))
+        for h in hosts:
+            ssh.connect(h["IP"], username=h["username"], password=h["password"], allow_agent=False)
+            # SCPCLient takes a paramiko transport as an argument
+            scp = SCPClient(ssh.get_transport())
+            # Uploading file to remote path
+            rem_path='~/Documents/ml_nfv_ec/backend/models'
+            scp.put(filename, remote_path=rem_path)
+            scp.close()
+            print('Model updated in host: '+h["IP"])
 
 
     def regressor(self): # DecisionTreeRegressor
