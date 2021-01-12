@@ -1,0 +1,54 @@
+swagger: "2.0"
+info:
+  description: This is the swagger file that goes with our server code
+  version: "1.0.0"
+  title: Swagger REST Article
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+basePath: "/api"
+
+# Paths supported by the server application
+paths:
+  /start_mon:
+    get:
+      operationId: "monitor.monitor.start_mon"
+      parameters:
+        - name: testname
+          description: "Name of the test"
+          in: query
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              properties:
+                pid:
+                  type: integer
+                  description: Process PID
+  /stop_mon:
+    get:
+      operationId: "monitor.monitor.stop_mon"
+      arameters:
+        - name: testname
+          description: "Name of the test"
+          in: query
+          type: string
+          required: true
+        - name: pid
+          description: "PID of the process"
+          in: query
+          type: integer
+      produces:
+        - multipart/form-data
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object

@@ -8,20 +8,9 @@ import pickle
 load_pct = list()
 used_ram_pct = list()
 br_mbps = list()
-mon_hosts = [ 
-    {# SERVER
-        "IP": "10.98.1.26",
-        "username": "ubuntu",
-        "password": "osm2018",
-        "cpu": True
-    },
-    {# MODELER
-        "IP": "10.98.1.43",
-        "username": "ubuntu",
-        "password": "i2t",
-        "cpu": True
-    }
-]
+ssh_list = list()
+data = list()
+
 
 def get_opts():
     global test_name, add_host, host_data
@@ -81,6 +70,21 @@ def ssh_session(hostname, username, password):
     ssh.connect(hostname, username=username, password=password)
     return ssh
 
+def get_ssh_sessions(diff, hosts):
+    for i in range(1,diff+1):
+        print(hosts[diff-i]["IP"])
+        ssh = ssh_session(hosts[diff-i]["IP"], hosts[diff-i]["username"], hosts[diff-i]["password"])
+        ssh_list.append(ssh)
+
+def check_host_count(hosts, host_count):
+    if (len(hosts)!=host_count):
+        diff = len(hosts) - host_count
+        host_cnt = len(hosts)
+    else:
+        host_cnt = host_count
+        diff = 0
+    return diff, host_cnt
+
 def get_load_pct(ssh):
     # Packet "sysstat" required in target machine
     cmd = "sar -u 1 1"
@@ -110,11 +114,10 @@ def get_bitrate(ssh,int_name,kbps=False):
 
 def signal_handler(sig, frame):
     print('You pressed Ctrl+C!')
-    ssh.close()
-    print("Total number of measures: "+str(min([len(load_pct),len(used_ram_pct),len(br_mbps)])))
-    save_to_file(load_pct,"load_pct")
-    save_to_file(used_ram_pct,"used_ram_pct")
-    save_to_file(br_mbps,"br_txrx_mbps")
+    for ssh in ssh_list:
+        ssh.close()
+    print("Total number of measures: "+str(len(data)))
+    save_to_file(data,"mon_data")
     sys.exit(0)
 
 def save_to_file(obj,type_name):
@@ -128,34 +131,40 @@ def save_to_file(obj,type_name):
     print(type_name+"\tsaved into -> "+filename)
 
 def main():
+    host_count=0
     # Read options
     get_opts()
     if(add_host):
         add_host_tofile()
     else:
-        # Set ssh conn
-        global ssh
-        # Get ssh connections
-        ssh_list = list()
-        hosts = get_hosts()
-        if (hosts == None):
-            print("Error: ./hosts.p file not found")
-            sys.exit(2)
-        print_hosts(hosts)
-        for host in hosts:
-            ssh = ssh_session(host["IP"], host["username"], host["password"])
-            ssh_list.append(ssh)
-        # Get metrics
         signal.signal(signal.SIGINT, signal_handler)
-        print('Press Ctrl+C to exit and show metrics')
-        while 1:
-            for ssh in ssh_list:
-                now = datetime.datetime.now().timestamp()
-                load_pct.append([get_load_pct(ssh), now])
-                used_ram_pct.append([get_used_ram_pct(ssh), now])
-                br_rx_mbps, br_tx_mbps = get_bitrate(ssh,"ens3")
-                br_mbps.append([[br_rx_mbps,br_tx_mbps],now])
-            time.sleep(1)
+        print('Press Ctrl+C to exit and save metrics')
+        while 1: 
+            hosts = get_hosts()
+            if (hosts == None):
+                print("No host found in ./hosts.p file")
+                time.sleep(1)
+                #sys.exit(2)
+            else:            
+                #print_hosts(hosts)
+                diff, host_count = check_host_count(hosts,host_count)
+                get_ssh_sessions(diff, hosts) # ssh_list is fulfilled
+                print("Number of monitored hosts: "+str(len(ssh_list)))
+                # Get metrics
+                n=0
+                hosts_data=list()
+                for ssh in ssh_list:
+                    now = datetime.datetime.now().timestamp()
+                    load_pct = get_load_pct(ssh)
+                    used_ram_pct = get_used_ram_pct(ssh)
+                    br_rx_mbps, br_tx_mbps = get_bitrate(ssh,"ens3")
+                    br_mbps = [br_rx_mbps,br_tx_mbps]
+                    print("Storing data from h"+str(n))
+                    hosts_data.append([load_pct, used_ram_pct, br_mbps, now, n])
+                    n+=1
+                data.append(hosts_data)
+                print(data)
+                time.sleep(1)
 
 if __name__ == '__main__':
     main()

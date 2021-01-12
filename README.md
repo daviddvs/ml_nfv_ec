@@ -40,7 +40,7 @@ Backend machine IP must be edited in the python file.
 Note: press CTRL+C to end monitoring process and save data.
 ```
 cd ~/ml_nfv_ec/mon
-python3 mon.py
+python3 mon.py -n <test_name>
 ```
 
 Run the tests in the **Client**. A file with data to be processed will be downloaded once and stored in the Client.
