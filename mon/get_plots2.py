@@ -107,17 +107,27 @@ def main():
     print (br_mbps)
     print (x)
     plot_dir="plots"
+    host_num=len(load_pct)
     #Plot load pct
     x = normalize(x[0])
     y = load_pct
-    plot_graph(x,y,["load %"],0,len(x),"Time(s)","Load (%)","Load Percentage",test_name+"-load_pct.png",plot_dir)
+    label_load_ram=list()
+    label_br=list()
+    for i in range(0,host_num):
+        label_load_ram.append("host_"+str(i))
+        label_br.append("host_"+str(i)+" RX")
+        label_br.append("host_"+str(i)+" TX")
+    plot_graph(x,y,label_load_ram,0,len(x),"Time(s)","Load (%)","Load Percentage",test_name+"-load_pct.png",plot_dir)
     # Plot used ram pct
     y = used_ram_pct
-    plot_graph(x,y,["used RAM %"],0,len(x),"Time(s)","Used RAM (%)","Used RAM Percentage",test_name+"-used_ram_pct.png",plot_dir)
+    plot_graph(x,y,label_load_ram,0,len(x),"Time(s)","Used RAM (%)","Used RAM Percentage",test_name+"-used_ram_pct.png",plot_dir)
     # Plot bitrate
-    rx,tx = split_xy(br_mbps[0])
-    label = ["br_rx_mbps","br_tx_mbps"]
-    plot_graph(x,[rx,tx],label,0,len(x),"Time(s)","Bitrate (Mbps)","RX/TX Bitrate",test_name+"-br_txrx_mbps.png",plot_dir)
+    y=list()
+    for br in br_mbps:
+        rx,tx = split_xy(br)
+        y.append(rx)
+        y.append(tx)
+    plot_graph(x,[rx,tx],label_br,0,len(x),"Time(s)","Bitrate (Mbps)","RX/TX Bitrate",test_name+"-br_txrx_mbps.png",plot_dir)
 
 if __name__ == '__main__':
     main()
