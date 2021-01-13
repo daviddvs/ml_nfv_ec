@@ -42,9 +42,8 @@ def load_from_file(test_name):
                 host_data.append([])
         hosts_data.append(host_data)
     return hosts_data
-    #return load_pct, used_ram_pct, br_mbps
 
-def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir):
+def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir,br=False):
     #  Check if plot dir exists and create it
     if not os.path.exists(plot_dir):
         os.makedirs(plot_dir)
@@ -62,16 +61,21 @@ def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir):
     plt.savefig(plot_dir+"/"+filename)
     print("Saved figure to -> "+plot_dir+"/"+filename)
 
-def get_xy(lst,brx=False):
-    xx = list()
+def split_xy(lst):
     x = list()
     y = list()
     for i in lst:
-        xx.append(i[1])
+        x.append(i[1])
         y.append(i[0])
-    for i in xx:
-        x.append(round(i-xx[0]))
     return x, y
+
+def normalize(array):
+    x=list()
+    for i in array:
+        x.append(round(i-array[0]))
+    return x
+
+
 def get_data(hosts_data):
     y_load = list()
     y_ram = list()
@@ -102,24 +106,18 @@ def main():
     print (used_ram_pct)
     print (br_mbps)
     print (x)
-    '''
-    x_load_pct, y_load_pct = get_xy(load_pct)
-    x_used_ram_pct, y_used_ram_pct = get_xy(used_ram_pct)
-    x_br_mbps, y_br_mbps = get_xy(br_mbps)
     plot_dir="plots"
-    # Plot load pct
-    x = x_load_pct
-    y = y_load_pct
-    plot_graph(x,[y],["load %"],0,len(x),"Time(s)","Load (%)","Load Percentage",test_name+"-load_pct.png",plot_dir)
+    #Plot load pct
+    x = normalize(x[0])
+    y = load_pct
+    plot_graph(x,y,["load %"],0,len(x),"Time(s)","Load (%)","Load Percentage",test_name+"-load_pct.png",plot_dir)
     # Plot used ram pct
-    x = x_used_ram_pct
-    y = y_used_ram_pct
-    plot_graph(x,[y],["used RAM %"],0,len(x),"Time(s)","Used RAM (%)","Used RAM Percentage",test_name+"-used_ram_pct.png",plot_dir)
+    y = used_ram_pct
+    plot_graph(x,y,["used RAM %"],0,len(x),"Time(s)","Used RAM (%)","Used RAM Percentage",test_name+"-used_ram_pct.png",plot_dir)
     # Plot bitrate
-    x = x_br_mbps
-    y = y_br_mbps
+    rx,tx = split_xy(br_mbps[0])
     label = ["br_rx_mbps","br_tx_mbps"]
-    plot_graph(x,[y],label,0,len(x),"Time(s)","Bitrate (Mbps)","RX/TX Bitrate",test_name+"-br_txrx_mbps.png",plot_dir)
-    '''
+    plot_graph(x,[rx,tx],label,0,len(x),"Time(s)","Bitrate (Mbps)","RX/TX Bitrate",test_name+"-br_txrx_mbps.png",plot_dir)
+
 if __name__ == '__main__':
     main()
