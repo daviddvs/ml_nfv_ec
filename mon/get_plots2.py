@@ -20,7 +20,7 @@ def get_opts():
             test_name = str(arg)
 
 def load_from_file(test_name):
-    # Chech if results dir exists and read files
+    # Check if results dir exists and read files
     result_dir="results"
     test_file = result_dir+"/"+test_name+"-mon_data.p"
     # Load test data from file
@@ -31,16 +31,23 @@ def load_from_file(test_name):
         sys.exit(2)
     # Reorder data
     host_data = list()
-    hosts_data = list()
-    initial_hosts = len(data[0])
-    final_hosts = len(data[-1])
-    for i in range(0,final_hosts):
+    host_num = len(data[-1]) # taken from the last sample to include hosts added on the fly
+    sample_num = len(data)
+    for i in range(0,host_num):
         for d in data:
             try:
                 host_data.append(d[i])
             except IndexError:
                 host_data.append([])
-        hosts_data.append(host_data)
+    hosts_data = split_hosts(host_data,sample_num,host_num)
+    return hosts_data
+
+def split_hosts(host_data, sample_num, host_num):
+    hosts_data=list()
+    for j in range(0,host_num):
+        offset = j*sample_num
+        h = host_data[offset:offset+sample_num]
+        hosts_data.append(h)
     return hosts_data
 
 def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir,br=False):
@@ -75,7 +82,6 @@ def normalize(array):
         x.append(round(i-array[0]))
     return x
 
-
 def get_data(hosts_data):
     y_load = list()
     y_ram = list()
@@ -102,10 +108,6 @@ def main():
     get_opts()
     hosts_data = load_from_file(test_name)
     load_pct, used_ram_pct, br_mbps, x = get_data(hosts_data)
-    print (load_pct)
-    print (used_ram_pct)
-    print (br_mbps)
-    print (x)
     plot_dir="plots"
     host_num=len(load_pct)
     #Plot load pct
@@ -127,7 +129,7 @@ def main():
         rx,tx = split_xy(br)
         y.append(rx)
         y.append(tx)
-    plot_graph(x,[rx,tx],label_br,0,len(x),"Time(s)","Bitrate (Mbps)","RX/TX Bitrate",test_name+"-br_txrx_mbps.png",plot_dir)
+    plot_graph(x,y,label_br,0,len(x),"Time(s)","Bitrate (Mbps)","RX/TX Bitrate",test_name+"-br_txrx_mbps.png",plot_dir)
 
 if __name__ == '__main__':
     main()
