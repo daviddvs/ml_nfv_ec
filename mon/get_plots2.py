@@ -94,10 +94,16 @@ def get_data(hosts_data):
         yy_br = list()
         xx = list()
         for i in h:
-            yy_load.append(i[0])
-            yy_ram.append(i[1])
-            yy_br.append(i[2])
-            xx.append(i[3])
+            if (len(i) != 0):
+                yy_load.append(i[0])
+                yy_ram.append(i[1])
+                yy_br.append(i[2])
+                xx.append(i[3])
+            else:
+                yy_load.append(0)
+                yy_ram.append(0)
+                yy_br.append([0,0])
+                xx.append(0)
         y_load.append(yy_load)
         y_ram.append(yy_ram)
         y_br.append(yy_br)
@@ -107,11 +113,13 @@ def get_data(hosts_data):
 def main():
     get_opts()
     hosts_data = load_from_file(test_name)
+    #print(hosts_data)
     load_pct, used_ram_pct, br_mbps, x = get_data(hosts_data)
+    print(load_pct)
     plot_dir="plots"
     host_num=len(load_pct)
     #Plot load pct
-    x = normalize(x[0])
+    x = normalize(x[0]) # you chose the first one, which is the full one
     y = load_pct
     label_load_ram=list()
     label_br=list()
