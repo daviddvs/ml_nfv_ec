@@ -137,3 +137,6 @@ backend/models
 
 # Data dir
 cli/data
+
+# Mon hosts
+mon/hosts.p
