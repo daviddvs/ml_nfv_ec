@@ -35,20 +35,12 @@ paths:
   /stop_mon:
     get:
       operationId: "monitor.monitor.stop_mon"
-      arameters:
-        - name: testname
-          description: "Name of the test"
-          in: query
-          type: string
-          required: true
+      parameters:
         - name: pid
           description: "PID of the process"
           in: query
           type: integer
-      produces:
-        - multipart/form-data
+          required: true
       responses:
         200:
           description: OK
-          schema:
-            type: object
