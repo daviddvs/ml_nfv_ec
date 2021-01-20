@@ -54,7 +54,7 @@ Data from that file will be extracted and sent to the Backend.
 In the case of clustering algorithm, data is loaded from the sklearn python library.
 ```
 cd ~/ml_nfv_ec/cli
-python3 rest_test_data.py -t <type_of_algorithm> -n <number_of_prediction_elem> -r <repetitions> -T <test_type>
+python3 rest_test_data.py -t <type_of_algorithm> -n <number_of_prediction_elem> -r <repetitions> -T <test_name>
 # As an example:
 python3 rest_test_data.py -t clustering -n 4 -r 50 -T test3
 ```
