@@ -15,15 +15,15 @@ url_classifier="https://archive.ics.uci.edu/ml/machine-learning-databases/undocu
 url_regressor="http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
 
 def get_opts():
-    global typ, num, rep, url, test_typ # declare global vars
+    global typ, num, rep, url, test_name # declare global vars
     typ="classifier"
     num=1 
     rep=1
-    ip="127.0.0.1"
+    ip="10.98.1.26"
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"hs:t:n:r:T:",["help","ser=","typ=","num=","rep=","test_typ="])
+        opts, args = getopt.getopt(sys.argv[1:],"hs:t:n:r:T:",["help","ser=","typ=","num=","rep=","testname="])
     except getopt.GetoptError:
-        print("Syntax err:"+os.path.basename(__file__)+" -t <type_of_algorithm> -n <number_of_prediction_elem> -r <repetitions> -T <test_type>")
+        print("Syntax err:"+os.path.basename(__file__)+" -t <type_of_algorithm> -n <number_of_prediction_elem> -r <repetitions> -T <test_name>")
         sys.exit(2)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -34,7 +34,7 @@ def get_opts():
                     " 63*2^n for classifier and regressor.")
             print("\t-r <number_of_repetitions>: set the number of repetitios (default 1) to predict.")
             print("\t-t <type_of_algorithm>: set the algorithm to classifier/regressor.")
-            print("\t-tt <test_type>: set a name for the test.")
+            print("\t-T <test_name>: set a name for the test.")
             print ("\t-s <server_ip>: set the ip address of the backend server (default 127.0.0.1")
             sys.exit()
         elif opt in ("-n", "--num"):
@@ -43,8 +43,8 @@ def get_opts():
             rep = int(arg)
         elif opt in ("-t", "--typ"):
             typ = str(arg)
-        elif opt in ("-T", "--test_typ"):
-            test_typ = str(arg)
+        elif opt in ("-T", "--testname"):
+            test_name = str(arg)
         elif opt in ("-s", "--server"):
             ip = str(arg)
     print("Algorithm: "+typ)
@@ -133,17 +133,38 @@ def save_to_file(obj,type_name):
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
     # Save the object to file
-    filename = result_dir+"/"+test_typ+"-"+type_name+".p"
+    filename = result_dir+"/"+test_name+"-"+type_name+".p"
     pickle.dump(obj, open(filename, 'wb'))
     print(type_name+"\tsaved into -> "+filename)
+
+def start_remote_mon(mon_ip,mon_port,testname):
+    url="http://"+mon_ip+":"+mon_port+"/api/start_mon?testname="+testname
+    try:
+        response = requests.get(url)
+    except http.client.HTTPException as e:
+        print(e)
+    return response.json()
+
+def stop_remote_mon(mon_ip,mon_port,pid):
+    url="http://"+mon_ip+":"+mon_port+"/api/stop_mon?pid="+str(pid)
+    try:
+        response = requests.get(url)
+    except http.client.HTTPException as e:
+        print(e)
+    return str(response.json())
 
 def main():
     get_opts()
     get_data()
+    mon_ip = "127.0.0.1"
+    mon_port = "5001"
+    pid = start_remote_mon(mon_ip,mon_port,test_name)
     print("Sent bytes for each prediction: "+str(sys.getsizeof(content)))
     t_pred, t_resp, elem = parallel_loop()
     save_to_file(t_pred,"tpred-"+str(elem)+"_"+str(rep))
     save_to_file(t_resp,"tresp-"+str(elem)+"_"+str(rep))
+    msg = stop_remote_mon(mon_ip,mon_port,pid)
+    print("Remote monitoring: "+str(msg))
 
 if __name__=="__main__":
     main()
