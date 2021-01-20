@@ -35,13 +35,19 @@ python3 model.py --classifier --regressor --clustering -i 5
 ```
 
 Run the **Monitor**. 
-This will gather CPU, RAM and bitrate info from the Backend machine and it will the save into a results dir.
-Backend machine IP must be edited in the python file.
-Note: press CTRL+C to end monitoring process and save data.
+This will gather CPU, RAM and bitrate info from the specified machines (e.g. Backend) and it will save it into a results dir.
+- To add a machine for monitoring (hosts can be added on the fly):
 ```
 cd ~/ml_nfv_ec/mon
-python3 mon.py -n <test_name>
+python3 mon2.py --add IP,user,pass
 ```
+- To start monitoring process: 
+```
+cd ~/ml_nfv_ec/mon
+python3 mon2.py --add IP,user,pass
+python3 mon2.py -n <test_name>
+```
+- Note: press CTRL+C to end monitoring process and save data.
 
 Run the tests in the **Client**. A file with data to be processed will be downloaded once and stored in the Client.
 Data from that file will be extracted and sent to the Backend. 
@@ -64,7 +70,7 @@ Plot test results
  - CPU, RAM and Bitrate
     ```
     cd ~/ml_nfv_ec/mon
-    python3 get_plots.py -n <test_name>
+    python3 get_plots2.py -n <test_name>
     ```
 
 ## Configure the Balancer
