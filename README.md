@@ -29,7 +29,7 @@ Note: press CTRL+C to exit.
 cd ~/ml_nfv_ec/backend
 pip3 install -r requirements.txt
 python3 model.py --classifier --regressor --clustering -i <update_interval_seconds>
-python3 model.py --addhost <ip,user,password>
+python3 model.py --addhost <IP,user,password>
 ```
 
 Run the **Monitor**. 
@@ -38,7 +38,7 @@ Add hosts for monitoring (they can be added on the fly) and start REST server:
 ```
 cd ~/ml_nfv_ec/mon
 pip3 install -r requirements.txt
-python3 mon2.py --add IP,user,pass
+python3 mon2.py --add <IP,user,password>
 python3 server.py
 ```
 
