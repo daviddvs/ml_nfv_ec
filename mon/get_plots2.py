@@ -134,7 +134,7 @@ def main():
     # Plot bitrate
     y=list()
     for br in br_mbps:
-        rx,tx = split_xy(br)
+        tx,rx = split_xy(br) # returns first the second position, which is tx
         y.append(rx)
         y.append(tx)
     plot_graph(x,y,label_br,0,len(x),"Time(s)","Bitrate (Mbps)","RX/TX Bitrate",test_name+"-br_txrx_mbps.png",plot_dir)
