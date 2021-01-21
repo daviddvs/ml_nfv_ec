@@ -10,50 +10,46 @@ There are four elements in the architecture:
 - Balancer: balances the load between multiple instances of the backend
 
 ## Get started
-Clone this repo and install the Python requirements for each element of the architecture.
+Clone this repo in the root directory of your user.
 ```
 cd ~
 git clone https://github.com/daviddvs/ml_nfv_ec.git
-cd ml_nfv_ec/<element>
-pip3 install -r requirements.txt
 ```
 
 Run the **Backend** server.
 ```
 cd ~/ml_nfv_ec/backend
+pip3 install -r requirements.txt
 python3 server.py
 ```
 
-Run the **Modeler** to create/update models in the Backend.
-Note: server IP must be edited in `ml_model` to point to the Backed server.
-Note: update interval in seconds and press CTRL+C to exit.
+Run the **Modeler** to create/update models in the Backend. Note that hosts must be added so that the modeler knows which are the IP and credentials of the target hosts. It can be done before of after running the Modeler.
+Note: press CTRL+C to exit.
 ```
 cd ~/ml_nfv_ec/backend
-python3 model.py --classifier --regressor --clustering -i <update_interval>
-# As an example
-python3 model.py --classifier --regressor --clustering -i 5
+pip3 install -r requirements.txt
+python3 model.py --classifier --regressor --clustering -i <update_interval_seconds>
+python3 model.py --addhost <ip,user,password>
 ```
 
 Run the **Monitor**. 
-This will gather CPU, RAM and bitrate info from the specified machines (e.g. Backend) and it will save it into a results dir.
-- To add a machine for monitoring (hosts can be added on the fly):
+This will gather CPU, RAM and TX/RX bitrate info from the specified machines (e.g. Backend) and it will save it into a results dir. It provides a REST API so that the Client can trigger the monitoring of the added machines.
+Add hosts for monitoring (they can be added on the fly) and start REST server:
 ```
 cd ~/ml_nfv_ec/mon
+pip3 install -r requirements.txt
 python3 mon2.py --add IP,user,pass
+python3 server.py
 ```
-- To start monitoring process: 
-```
-cd ~/ml_nfv_ec/mon
-python3 mon2.py --add IP,user,pass
-python3 mon2.py -n <test_name>
-```
-- Note: press CTRL+C to end monitoring process and save data.
 
 Run the tests in the **Client**. A file with data to be processed will be downloaded once and stored in the Client.
 Data from that file will be extracted and sent to the Backend. 
 In the case of clustering algorithm, data is loaded from the sklearn python library.
+The Client also communicates with the REST API of the Monitor to trigger the monitoring of the previously added machines. 
+Note: The IP of the Monitor must be manually edited in the `rest_test_data.py` file.
 ```
 cd ~/ml_nfv_ec/cli
+pip3 install -r requirements.txt
 python3 rest_test_data.py -t <type_of_algorithm> -n <number_of_prediction_elem> -r <repetitions> -T <test_name>
 # As an example:
 python3 rest_test_data.py -t clustering -n 4 -r 50 -T test3
@@ -64,8 +60,6 @@ Plot test results
     ```
     cd ~/ml_nfv_ec/cli
     python3 get_plots.py -n <test_name>
-    # As an example:
-    python3 get_plots.py -n test3
     ```
  - CPU, RAM and Bitrate
     ```
