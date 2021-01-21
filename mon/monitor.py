@@ -26,7 +26,6 @@ class monitor:
         return msg
         # Read result files
         #return read_results(testname)
-        #return [1]
 
     '''
     # Dejo esto para que se haga manual 
@@ -41,19 +40,3 @@ class monitor:
         load_pct, used_ram_pct, br_mbps = load_from_file(testname)
         return [load_pct, used_ram_pct, br_mbps, hosts]
     '''
-
-'''
-mon = monitor()
-testname="montest"
-pid = mon.start_mon(testname)
-pid+=1 # need to be one more
-print("Monitoring started with PID: "+str(pid))
-print("Wait for 30 seconds...")
-time.sleep(30)
-print("Send CTRL+C to stop monitoring")
-mon.stop_mon(pid)
-'''
-        
-        
-        
-
