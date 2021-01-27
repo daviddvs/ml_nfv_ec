@@ -34,6 +34,7 @@ python3 model.py --addhost <IP,user,password>
 
 Run the **Monitor**. 
 This will gather CPU, RAM and TX/RX bitrate info from the specified machines (e.g. Backend) and it will save it into a results dir. It provides a REST API so that the Client can trigger the monitoring of the added machines.
+Note: edit the monitoring interface name of the target host in `monitor.py` (default `eth0`)
 Add hosts for monitoring (they can be added on the fly) and start REST server:
 ```
 cd ~/ml_nfv_ec/mon
@@ -46,7 +47,6 @@ Run the tests in the **Client**. A file with data to be processed will be downlo
 Data from that file will be extracted and sent to the Backend. 
 In the case of clustering algorithm, data is loaded from the sklearn python library.
 The Client also communicates with the REST API of the Monitor to trigger the monitoring of the previously added machines. 
-Note: The IP of the Monitor must be manually edited in the `rest_test_data.py` file.
 ```
 cd ~/ml_nfv_ec/cli
 pip3 install -r requirements.txt
