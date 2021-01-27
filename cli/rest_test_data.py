@@ -15,15 +15,16 @@ url_classifier="https://archive.ics.uci.edu/ml/machine-learning-databases/undocu
 url_regressor="http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
 
 def get_opts():
-    global typ, num, rep, url, test_name # declare global vars
+    global mon_ip, typ, num, rep, url, test_name # declare global vars
     typ="classifier"
     num=1 
     rep=1
-    ip="10.98.1.26"
+    ip="127.0.0.1"
+    mon_ip="127.0.0.1"
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"hs:t:n:r:T:",["help","ser=","typ=","num=","rep=","testname="])
+        opts, args = getopt.getopt(sys.argv[1:],"hs:m:t:n:r:T:",["help","ser=","mon=","typ=","num=","rep=","testname="])
     except getopt.GetoptError:
-        print("Syntax err:"+os.path.basename(__file__)+" -t <type_of_algorithm> -n <number_of_prediction_elem> -r <repetitions> -T <test_name>")
+        print("Syntax err:"+os.path.basename(__file__)+" -s <server_ip> -m <monitor_ip> -t <type_of_algorithm> -n <number_of_prediction_elem> -r <repetitions> -T <test_name>")
         sys.exit(2)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -36,6 +37,7 @@ def get_opts():
             print("\t-t <type_of_algorithm>: set the algorithm to classifier/regressor.")
             print("\t-T <test_name>: set a name for the test.")
             print ("\t-s <server_ip>: set the ip address of the backend server (default 127.0.0.1")
+            print ("\t-m <monitor_ip>: set the ip address of the monitor (default 127.0.0.1")
             sys.exit()
         elif opt in ("-n", "--num"):
             num = int(arg)
@@ -47,6 +49,8 @@ def get_opts():
             test_name = str(arg)
         elif opt in ("-s", "--server"):
             ip = str(arg)
+        elif opt in ("-m", "--monitor"):
+            mon_ip = str(arg)
     print("Algorithm: "+typ)
     if(typ=="classifier"):
         t="0"
@@ -156,7 +160,6 @@ def stop_remote_mon(mon_ip,mon_port,pid):
 def main():
     get_opts()
     get_data()
-    mon_ip = "127.0.0.1"
     mon_port = "5001"
     pid = start_remote_mon(mon_ip,mon_port,test_name)
     print("Sent bytes for each prediction: "+str(sys.getsizeof(content)))
