@@ -13,14 +13,15 @@ data = list()
 
 
 def get_opts():
-    global test_name, add_host, host_data
+    global test_name, add_host, host_data, mon_int
     test_name="testName"
     add_host=False
     host_data=None
+    mon_int="eth0"
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"hn:a:",["help","name=","add="])
+        opts, args = getopt.getopt(sys.argv[1:],"hn:a:i:",["help","name=","add=","int="])
     except getopt.GetoptError:
-        print("Syntax err: "+os.path.basename(__file__)+" -n <test_name> --add hostname,user,password")
+        print("Syntax err: "+os.path.basename(__file__)+" -n <test_name> --add hostname,user,password -i <monitored_interface>")
         sys.exit(2)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -35,6 +36,8 @@ def get_opts():
             add_host = True
             host_data = str(arg).split(",")
             print(host_data)
+        elif opt in ("-i", "--interface"):
+            mon_int = str(arg)
 
 def add_host_tofile():
     hostfile = './hosts.p'
@@ -157,7 +160,7 @@ def main():
                     now = datetime.datetime.now().timestamp()
                     load_pct = get_load_pct(ssh)
                     used_ram_pct = get_used_ram_pct(ssh)
-                    br_rx_mbps, br_tx_mbps = get_bitrate(ssh,"ens3")
+                    br_rx_mbps, br_tx_mbps = get_bitrate(ssh,mon_int)
                     br_mbps = [br_rx_mbps,br_tx_mbps]
                     print("Storing data from h"+str(n))
                     hosts_data.append([load_pct, used_ram_pct, br_mbps, now, n])
