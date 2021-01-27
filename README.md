@@ -50,9 +50,9 @@ Note: The IP of the Monitor must be manually edited in the `rest_test_data.py` f
 ```
 cd ~/ml_nfv_ec/cli
 pip3 install -r requirements.txt
-python3 rest_test_data.py -t <type_of_algorithm> -n <number_of_prediction_elem> -r <repetitions> -T <test_name>
+python3 rest_test_data.py -s <server_ip> -m <monitor_ip> -t <type_of_algorithm> -n <number_of_prediction_elem> -r <repetitions> -T <test_name>
 # As an example:
-python3 rest_test_data.py -t clustering -n 4 -r 50 -T test3
+python3 rest_test_data.py -s 127.0.0.1 -m 127.0.0.2 -t clustering -n 4 -r 50 -T test3
 ```
 
 Plot test results
