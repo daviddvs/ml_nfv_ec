@@ -7,7 +7,8 @@ import time
 
 class monitor:
     def start_mon(testname):
-        cmd = "python3 mon2.py -i eth0 -n "+testname
+        main_int = os.listdir('/sys/class/net')[1]
+        cmd = "python3 mon2.py -i "+main_int+" -n "+testname
         # Run in background with Popen
         proc = subprocess.Popen(cmd, shell=True)
         print("Process PID: "+str(proc.pid))
