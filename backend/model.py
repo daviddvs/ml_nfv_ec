@@ -9,11 +9,11 @@ def get_opts():
     try:
         opts, args = getopt.getopt(sys.argv[1:],"hncrli:",["help","classifier","regressor","clustering","interval=","addhost="])
     except getopt.GetoptError:
-        print("Syntax err: "+path.basename(__file__)+" --classifier --regressor --clustering -i <update_interval> --add <host_ip>,<user>,<pass>")
+        print("Syntax err: "+os.path.basename(__file__)+" --classifier --regressor --clustering -i <update_interval> --add <host_ip>,<user>,<pass>")
         sys.exit(2)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
-            print(path.basename(__file__)) 
+            print(os.path.basename(__file__)) 
             print("Options:")
             print("\t-h : display this menu.")
             print("\t--classifier: update classifier model.")
