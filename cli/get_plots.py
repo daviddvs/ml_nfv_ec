@@ -7,11 +7,11 @@ def get_opts():
     try:
         opts, args = getopt.getopt(sys.argv[1:],"hn:",["help","name="])
     except getopt.GetoptError:
-        print("Syntax err: "+path.basename(__file__)+" -n <test_name>")
+        print("Syntax err: "+os.path.basename(__file__)+" -n <test_name>")
         sys.exit(2)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
-            print(path.basename(__file__)) 
+            print(os.path.basename(__file__)) 
             print("Options:")
             print("\t-h : display this menu.")
             print("\t-n <test_name>: set the name of the test to plot.")
