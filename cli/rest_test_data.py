@@ -15,29 +15,33 @@ url_classifier="https://archive.ics.uci.edu/ml/machine-learning-databases/undocu
 url_regressor="http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
 
 def get_opts():
-    global mon_ip, typ, num, rep, url, test_name # declare global vars
+    global mon_ip, typ, num, rep, url, test_name, index # declare global vars
     typ="classifier"
     num=1 
     rep=1
     ip="127.0.0.1"
     mon_ip="127.0.0.1"
+    index=0
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"hs:m:t:n:r:T:",["help","ser=","mon=","typ=","num=","rep=","testname="])
+        opts, args = getopt.getopt(sys.argv[1:],"hs:m:t:n:r:T:i:",
+        ["help","ser=","mon=","typ=","num=","rep=","testname=","index="])
     except getopt.GetoptError:
-        print("Syntax err:"+os.path.basename(__file__)+" -s <server_ip> -m <monitor_ip> -t <type_of_algorithm> -n <number_of_prediction_elem> -r <repetitions> -T <test_name>")
+        print("Syntax err:"+os.path.basename(__file__)+" -s <server_ip> -m <monitor_ip> -t <type_of_algorithm> "+ 
+        "-n <number_of_prediction_elem> -r <repetitions> -T <test_name> -i <index>")
         sys.exit(2)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             print(os.path.basename(__file__)) 
             print("Options:")
-            print("\t-h : display this menu.")
-            print("\t-n <number_of_prediction_elements>: set the number of elements (default 1) to predict."+ 
-                    " 63*2^n for classifier and regressor.")
-            print("\t-r <number_of_repetitions>: set the number of repetitios (default 1) to predict.")
-            print("\t-t <type_of_algorithm>: set the algorithm to classifier/regressor.")
-            print("\t-T <test_name>: set a name for the test.")
-            print ("\t-s <server_ip>: set the ip address of the backend server (default 127.0.0.1")
-            print ("\t-m <monitor_ip>: set the ip address of the monitor (default 127.0.0.1")
+            print("\t-h : display this menu")
+            print("\t-n <number_of_prediction_elements>: set the number of elements (default 1) to predict"+ 
+                    " 63*2^n for classifier and regressor")
+            print("\t-r <number_of_repetitions>: set the number of repetitios (default 1) to predict")
+            print("\t-t <type_of_algorithm>: set the algorithm to classifier/regressor")
+            print("\t-T <test_name>: set a name for the test")
+            print("\t-s <server_ip>: set the ip address of the backend server (default 127.0.0.1")
+            #print("\t-m <monitor_ip>: set the ip address of the monitor (default 127.0.0.1")
+            print("\t-i <test_index>: set the test index for a correct reordering (only used for scripting)")
             sys.exit()
         elif opt in ("-n", "--num"):
             num = int(arg)
@@ -51,6 +55,8 @@ def get_opts():
             ip = str(arg)
         elif opt in ("-m", "--monitor"):
             mon_ip = str(arg)
+        elif opt in ("-i", "--index"):
+            index = int(arg)
     print("Algorithm: "+typ)
     if(typ=="classifier"):
         t="0"
@@ -160,14 +166,14 @@ def stop_remote_mon(mon_ip,mon_port,pid):
 def main():
     get_opts()
     get_data()
-    mon_port = "5001"
-    pid = start_remote_mon(mon_ip,mon_port,test_name)
+    #mon_port = "5001"
+    #pid = start_remote_mon(mon_ip,mon_port,test_name)
     print("Sent bytes for each prediction: "+str(sys.getsizeof(content)))
     t_pred, t_resp, elem = parallel_loop()
-    save_to_file(t_pred,"tpred-"+str(elem)+"_"+str(rep))
-    save_to_file(t_resp,"tresp-"+str(elem)+"_"+str(rep))
-    msg = stop_remote_mon(mon_ip,mon_port,pid)
-    print("Remote monitoring: "+str(msg))
+    save_to_file(t_pred,"tpred-"+str(index)+"-"+str(elem)+"_"+str(rep))
+    save_to_file(t_resp,"tresp-"+str(index)+"-"+str(elem)+"_"+str(rep))
+    #msg = stop_remote_mon(mon_ip,mon_port,pid)
+    #print("Remote monitoring: "+str(msg))
 
 if __name__=="__main__":
     main()

@@ -32,14 +32,19 @@ def load_from_file(test_name):
             if test_name in f:
                 test_files.append(f)
     # Load objects from files
+    test_files.sort() # sort files by name
+    t_pred = list()
+    t_resp = list()
     for f in test_files:
         filename=result_dir+"/"+f
         if "tpred" in f:
-            t_pred = pickle.load(open(filename, 'rb'))
+            t_pred_n = pickle.load(open(filename, 'rb'))
+            t_pred = t_pred + t_pred_n # merge lists with "+"
         if "tresp" in f:
-            t_resp = pickle.load(open(filename, 'rb'))
-    elem = test_files[0].split("-")[2].split("_")[0]
-    rep = test_files[0].split("-")[2].split("_")[1].split(".")[0]
+            t_resp_n = pickle.load(open(filename, 'rb'))
+            t_resp = t_resp + t_resp_n # merge lists with "+"
+    elem = test_files[0].split("-")[3].split("_")[0]
+    #rep = test_files[0].split("-")[3].split("_")[1].split(".")[0]
     return t_pred, t_resp, elem
 
 def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir):
@@ -71,7 +76,6 @@ def main():
     label = ["t_pred","t_resp"]
     plot_graph(x,y,label,0,len(x),"Iterations","Time (ms)","Prediction/Response time for "+
         elem+" elements",test_name+"-tpred_tresp-"+elem+".png",plot_dir)
-
 
 if __name__=="__main__":
     main()
