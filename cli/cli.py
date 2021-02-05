@@ -4,6 +4,7 @@ import requests
 import http
 import time
 import random
+import signal
 
 def get_opts():
     global ip, mon_ip, typ, num, rep, url, test_name, index # declare global vars
@@ -64,21 +65,31 @@ def stop_remote_mon(mon_ip,mon_port,pid):
         print(e)
     return str(response.json())
 
+def signal_handler(sig, frame):
+    print('You pressed Ctrl+C!')
+    msg = stop_remote_mon(mon_ip,mon_port,pid)
+    print("Remote monitoring: "+str(msg))
+    sys.exit(0)
+
 def main():
     get_opts()
+    global mon_port, pid
     mon_port = "5001"
     pid = start_remote_mon(mon_ip,mon_port,test_name)
     # The following two params can be inserted from the command line
-    duration = 10
+    #duration = 10
     max_slot = 5
-    for i in range(0,duration):
+    i=0
+    signal.signal(signal.SIGINT, signal_handler)
+    print('Press Ctrl+C to exit and save metrics')
+    while 1: 
+    #for i in range(0,duration):
         repe = random.randint(1, rep)
         cmd = f"python3 rest_test_data.py -s {ip} -t {typ} -n {num} -r {repe} -T {test_name} -i {i}"
         proc = subprocess.run(cmd, shell=True)
         slot = random.randint(1, max_slot)
         time.sleep(slot)
-    msg = stop_remote_mon(mon_ip,mon_port,pid)
-    print("Remote monitoring: "+str(msg))
+        i+=1
 
 if __name__=="__main__":
     main()
