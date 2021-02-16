@@ -35,7 +35,7 @@ def get_opts():
             print("Options:")
             print("\t-h : display this menu")
             print("\t-n <number_of_prediction_elements>: set the number of elements (default 1) to predict"+ 
-                    " 63*2^n for classifier and regressor")
+                    " 63*2^n")
             print("\t-r <number_of_repetitions>: set the number of repetitios (default 1) to predict")
             print("\t-t <type_of_algorithm>: set the algorithm to classifier/regressor")
             print("\t-T <test_name>: set a name for the test")
@@ -101,7 +101,7 @@ def get_data(): #typ= classifier/regressor/clustering
         data = scale(digits.data)
         x_train, x_test, y_train, y_test, images_train, images_test = train_test_split(
                 data, digits.target, digits.images, test_size=0.25, random_state=42)
-        x_test = x_test[0:63] # x_test is already an np.ndarray object
+        x_test = x_test[0:nlen] # x_test is already an np.ndarray object
     # Concatenate data to increment samples
     for i in range(1,num+1):
             x_test = np.concatenate((x_test,x_test), axis=0) # return an np.ndarray object
@@ -168,7 +168,9 @@ def main():
     get_data()
     #mon_port = "5001"
     #pid = start_remote_mon(mon_ip,mon_port,test_name)
-    print("Sent bytes for each prediction: "+str(sys.getsizeof(content)))
+    print("Sent bytes for each prediction: "+str(content.nbytes))
+    print("Sent elements: "+str(len(content)))
+    print("Sent bytes for each element: "+str(content[1].nbytes))
     t_pred, t_resp, elem = parallel_loop()
     save_to_file(t_pred,"tpred-"+str(index)+"-"+str(elem)+"_"+str(rep))
     save_to_file(t_resp,"tresp-"+str(index)+"-"+str(elem)+"_"+str(rep))
