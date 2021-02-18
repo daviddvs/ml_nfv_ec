@@ -33,7 +33,7 @@ class machine_learning:
             sftp = SFTPClient.from_transport(transport)
             backend_path="/root/ml_nfv_ec/backend"
             if self.model_dir not in sftp.listdir(path):
-                sftp.mkdir(os.path.join(path, self.model_dir))
+                sftp.mkdir(os.path.join(backend_path, self.model_dir))
             # SCPClient takes a paramiko transport as an argument
             scp = SCPClient(transport)
             # Uploading file to remote path
