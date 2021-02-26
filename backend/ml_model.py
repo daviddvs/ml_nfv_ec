@@ -6,7 +6,7 @@ from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
 from sklearn.datasets import load_digits
 from sklearn.preprocessing import scale
 import pickle
-from paramiko import SSHClient, AutoAddPolicy
+from paramiko import SSHClient, SFTPClient, AutoAddPolicy
 from scp import SCPClient
 import sys, os
 
@@ -28,8 +28,14 @@ class machine_learning:
         hosts = pickle.load(open(hostfile, 'rb'))
         for h in hosts:
             ssh.connect(h["IP"], username=h["username"], password=h["password"], allow_agent=False)
-            # SCPCLient takes a paramiko transport as an argument
-            scp = SCPClient(ssh.get_transport())
+            transport = ssh.get_transport()
+            # Create remote dir
+            sftp = SFTPClient.from_transport(transport)
+            backend_path="/root/ml_nfv_ec/backend"
+            if self.model_dir not in sftp.listdir(backend_path):
+                sftp.mkdir(os.path.join(backend_path, self.model_dir))
+            # SCPClient takes a paramiko transport as an argument
+            scp = SCPClient(transport)
             # Uploading file to remote path
             rem_path='~/ml_nfv_ec/backend/models'
             scp.put(filename, remote_path=rem_path)
