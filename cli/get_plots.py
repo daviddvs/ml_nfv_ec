@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import sys, getopt, os
 import pickle
+from scipy.interpolate import splrep, splev
 
 def get_opts():
     global test_name
@@ -54,10 +55,13 @@ def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir):
     # Plot figure and save
     plt.figure()
     for i in range(0,len(y)):
-        plt.plot(x[init:end],y[i][init:end],label=label[i])
-        #plt.plot(x,y[i],label=label[i])
+        smooth = splrep(x[init:end],y[i][init:end],s=100000)
+        y_smooth = splev(x[init:end],smooth)
+        plt.plot(x[init:end],y_smooth,label=label[i])
+        #plt.plot(x[init:end],y[i][init:end],label=label[i])
     plt.legend()
     axes = plt.gca()
+    axes.set_yscale('log')
     axes.set_xlim([x[init],x[end-1]])
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
