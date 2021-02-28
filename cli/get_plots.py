@@ -55,7 +55,7 @@ def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir):
     # Plot figure and save
     plt.figure()
     for i in range(0,len(y)):
-        smooth = splrep(x[init:end],y[i][init:end],s=100000)
+        smooth = splrep(x[init:end],y[i][init:end],s=15000)
         y_smooth = splev(x[init:end],smooth)
         plt.plot(x[init:end],y_smooth,label=label[i])
         #plt.plot(x[init:end],y[i][init:end],label=label[i])
@@ -70,6 +70,16 @@ def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir):
     plt.savefig(plot_dir+"/"+filename)
     print("Saved figure to -> "+plot_dir+"/"+filename)
 
+def plot_hist(x1,x2,filename,plot_dir):
+    fig, (ax1, ax2) = plt.subplots(nrows=2)
+    plt.tight_layout()
+    ax1.hist(x1, ec='black')
+    ax1.set_title('t_resp (ms)')
+    ax2.hist(x2, ec='black')
+    ax2.set_title('t_pred (ms)')
+    plt.savefig(plot_dir+"/"+filename)
+    print("Saved figure to -> "+plot_dir+"/"+filename)
+
 def main():
     get_opts()
     t_pred, t_resp, elem = load_from_file(test_name)
@@ -80,6 +90,7 @@ def main():
     label = ["t_pred","t_resp"]
     plot_graph(x,y,label,0,len(x),"Iterations","Time (ms)","Prediction/Response time for "+
         elem+" elements",test_name+"-tpred_tresp-"+elem+".png",plot_dir)
+    plot_hist(t_resp,t_pred,test_name+"-tpred_tresp-"+elem+"_hist.png",plot_dir)
 
 if __name__=="__main__":
     main()
