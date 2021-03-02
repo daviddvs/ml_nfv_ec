@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import sys, getopt, os
 import pickle
-from scipy.interpolate import splrep, splev
-import numpy as np
+#from scipy.interpolate import splrep, splev
+#import numpy as np
 
 def get_opts():
     global test_name
