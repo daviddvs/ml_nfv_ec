@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.datasets import load_digits
 from sklearn.preprocessing import scale
 import numpy as np
+from socket import error as SocketError
 
 port="5000"
 url_classifier="https://archive.ics.uci.edu/ml/machine-learning-databases/undocumented/connectionist-bench/sonar/sonar.all-data"
@@ -112,8 +113,10 @@ def get_prediction(i=0):
     timestamp = datetime.datetime.now().timestamp()
     try:
         response = requests.post(url, data = {'upfile': content}) # upfile is the name of the var
-    except http.client.HTTPException as e:
-        print(e)
+    except (http.client.HTTPException, SocketError) as e:
+        #print(e)
+        print(f'Connection error ocurred')
+        return i, None, 0
     now = datetime.datetime.now().timestamp()
     response_time_ms = (float(now) - float(timestamp))*1000
     return i, response, response_time_ms
@@ -126,15 +129,22 @@ def standard_loop():
 
 def parallel_loop():
         t_pred, t_resp = list(), list()
+        elem = 0
         with concurrent.futures.ThreadPoolExecutor() as executor:
             for i, response, response_time_ms in executor.map(get_prediction, range(1, rep+1)):
-                # Create a list() to save the results 
-                t_pred.append(response.json()[0])
-                t_resp.append(response_time_ms) 
-                elem = response.json()[1]
-                # Print results
-                print("#"+str(i)+"/"+str(rep)+" Prediction time: {0:.2f} ms for {1} elements. Response time: {2:.2f} ms".format(
-                    response.json()[0], response.json()[1], response_time_ms)) # response is in json
+                # Create a list() to save the results
+                if (response != None and response.status_code == 200):
+                    t_pred.append(response.json()[0])
+                    t_resp.append(response_time_ms) 
+                    elem = response.json()[1]
+                    # Print results
+                    print("#"+str(i)+"/"+str(rep)+" Prediction time: {0:.2f} ms for {1} elements. Response time: {2:.2f} ms".format(
+                        response.json()[0], response.json()[1], response_time_ms)) # response is in json
+                else:
+                    if (response != None):
+                        print(f'#{i}/{rep} Response code: {response.status_code}. Prediction lost.')
+                    #t_pred.append(0)
+                    #t_resp.append(0)
             return t_pred, t_resp, elem
 
 def save_to_file(obj,type_name):
@@ -172,8 +182,9 @@ def main():
     print("Sent elements: "+str(len(content)))
     print("Sent bytes for each element: "+str(content[1].nbytes))
     t_pred, t_resp, elem = parallel_loop()
-    save_to_file(t_pred,"tpred-"+str(index)+"-"+str(elem)+"_"+str(rep))
-    save_to_file(t_resp,"tresp-"+str(index)+"-"+str(elem)+"_"+str(rep))
+    if (elem != 0):
+        save_to_file(t_pred,"tpred-"+str(index)+"-"+str(elem)+"_"+str(rep))
+        save_to_file(t_resp,"tresp-"+str(index)+"-"+str(elem)+"_"+str(rep))
     #msg = stop_remote_mon(mon_ip,mon_port,pid)
     #print("Remote monitoring: "+str(msg))
 
