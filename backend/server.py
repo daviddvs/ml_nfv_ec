@@ -25,4 +25,5 @@ def check_models_dir():
 # If we're running in stand alone mode, run the application
 if __name__ == '__main__':
     check_models_dir()
-    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
+    # Threaded must be set to False to configure multiple processes
+    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False, threaded=False, processes=2)
