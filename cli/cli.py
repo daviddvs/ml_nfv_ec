@@ -77,19 +77,27 @@ def main():
     mon_port = "5001"
     pid = start_remote_mon(mon_ip,mon_port,test_name)
     # The following two params can be inserted from the command line
-    #duration = 10
-    max_slot = 5
+    duration = 180
+    max_slot = 3
+    accum_slot = 0
     i=0
-    signal.signal(signal.SIGINT, signal_handler)
+    #signal.signal(signal.SIGINT, signal_handler)
     print('Press Ctrl+C to exit and save metrics')
     while 1: 
     #for i in range(0,duration):
         repe = random.randint(1, rep)
         cmd = f"python3 rest_test_data.py -s {ip} -t {typ} -n {num} -r {repe} -T {test_name} -i {i}"
-        proc = subprocess.run(cmd, shell=True)
+        #proc = subprocess.run(cmd, shell=True)
+        proc = subprocess.Popen(cmd, shell=True) #Parallel execution
         slot = random.randint(1, max_slot)
         time.sleep(slot)
+        accum_slot = accum_slot + slot
         i+=1
+        if(accum_slot >= duration):
+            print(f"Accum slot: {accum_slot}")
+            msg = stop_remote_mon(mon_ip,mon_port,pid)
+            print("Remote monitoring: "+str(msg))
+            break
 
 if __name__=="__main__":
     main()
