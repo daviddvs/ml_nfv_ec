@@ -52,7 +52,7 @@ def split_hosts(host_data, sample_num, host_num):
         hosts_data.append(h)
     return hosts_data
 
-def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir,stem=False):
+def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir,stem=False,step=False):
     #  Check if plot dir exists and create it
     if not os.path.exists(plot_dir):
         os.makedirs(plot_dir)
@@ -64,6 +64,8 @@ def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir,stem=Fal
         #plt.plot(x[init:end],y_smooth,label=label[i])
         if(stem):
             plt.stem(x[init:end],y[i][init:end],label=label[i])
+        elif (step):
+            plt.step(x[init:end],y[i][init:end],label=label[i])
         else:
             plt.plot(x[init:end],y[i][init:end],label=label[i])
     plt.legend()
@@ -157,10 +159,10 @@ def main():
         label_load_ram.append("host_"+str(i))
         label_br.append("host_"+str(i)+" RX")
         label_br.append("host_"+str(i)+" TX")
-    plot_graph(x,y,label_load_ram,0,len(x),"Time(s)","Load (%)","Load Percentage",test_name+"-load_pct.png",plot_dir, stem=True)
+    plot_graph(x,y,label_load_ram,0,len(x),"Time(s)","Load (%)","Load Percentage",test_name+"-load_pct.png",plot_dir, step=True)
     # Plot used ram pct
     y = used_ram_pct
-    plot_graph(x,y,label_load_ram,0,len(x),"Time(s)","Used RAM (%)","Used RAM Percentage",test_name+"-used_ram_pct.png",plot_dir)
+    plot_graph(x,y,label_load_ram,0,len(x),"Time(s)","Used RAM (%)","Used RAM Percentage",test_name+"-used_ram_pct.png",plot_dir, step=True)
     # Plot bitrate
     y=list()
     for br in br_mbps:
@@ -172,7 +174,7 @@ def main():
         #print(rx)
         y.append(rx)
         y.append(tx)
-    plot_graph(x,y,label_br,0,len(x),"Time(s)","Bitrate (Mbps)","RX/TX Bitrate",test_name+"-br_txrx_mbps.png",plot_dir)
+    plot_graph(x,y,label_br,0,len(x),"Time(s)","Bitrate (Mbps)","RX/TX Bitrate",test_name+"-br_txrx_mbps.png",plot_dir, step=True)
 
 if __name__ == '__main__':
     main()
