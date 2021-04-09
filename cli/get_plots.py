@@ -54,8 +54,11 @@ def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir):
         os.makedirs(plot_dir)
     # Plot figure and save
     plt.figure()
+    s=100
     for i in range(0,len(y)):
-        smooth = splrep(x[init:end],y[i][init:end],s=15000)
+        if (i==1):
+            s=100000*s
+        smooth = splrep(x[init:end],y[i][init:end],s=s)
         y_smooth = splev(x[init:end],smooth)
         plt.plot(x[init:end],y_smooth,label=label[i])
         #plt.plot(x[init:end],y[i][init:end],label=label[i])
@@ -73,10 +76,14 @@ def plot_graph(x,y,label,init,end,xlabel,ylabel,title,filename,plot_dir):
 def plot_hist(x1,x2,filename,plot_dir):
     fig, (ax1, ax2) = plt.subplots(nrows=2)
     plt.tight_layout()
-    ax1.hist(x1, ec='black')
-    ax1.set_title('t_resp (ms)')
-    ax2.hist(x2, ec='black')
-    ax2.set_title('t_pred (ms)')
+    ax1.hist(x1, ec='black', label='t_resp (ms)')
+    #ax1.set_title('t_resp (ms)')
+    ax1.yaxis.grid(True)
+    ax1.legend()
+    ax2.hist(x2, ec='black', label='t_pred (ms)', color='skyblue')
+    #ax2.set_title('t_pred (ms)')
+    ax2.yaxis.grid(True)
+    ax2.legend()
     plt.savefig(plot_dir+"/"+filename)
     print("Saved figure to -> "+plot_dir+"/"+filename)
 

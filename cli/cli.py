@@ -81,8 +81,8 @@ def main():
     max_slot = 3
     accum_slot = 0
     i=0
-    #signal.signal(signal.SIGINT, signal_handler)
-    print('Press Ctrl+C to exit and save metrics')
+    signal.signal(signal.SIGINT, signal_handler)
+    print(f'Press Ctrl+C to exit and save metrics or program will finish in {duration} ms')
     while 1: 
     #for i in range(0,duration):
         repe = random.randint(1, rep)
