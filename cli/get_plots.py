@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import sys, getopt, os
 import pickle
 from scipy.interpolate import splrep, splev
+import numpy as np
 
 def get_opts():
     global test_name
@@ -87,17 +88,42 @@ def plot_hist(x1,x2,filename,plot_dir):
     plt.savefig(plot_dir+"/"+filename)
     print("Saved figure to -> "+plot_dir+"/"+filename)
 
+def plot_hist2(x1,x2,filename,plot_dir):
+    fig, (ax1, ax2) = plt.subplots(nrows=2)
+    rang=[0,30]
+    weights1 = np.ones_like(x1) / float(len(x1)) # to normalize
+    ax1.hist(x1, ec='black', label='t_pred (ms)', 
+        bins=30, range=rang, weights=weights1)
+    #ax1.set_title('t_resp (ms)')
+    ax1.yaxis.grid(True)
+    ax1.legend()
+    weights2 = np.ones_like(x2) / float(len(x2)) # to normalize
+    ax2.hist(x2, ec='black', label='t_pred_4x (ms)', color='skyblue', 
+        bins=30, range=rang, weights=weights2)
+    #ax2.set_title('t_pred (ms)')
+    ax2.set_xlabel("Prediction time (ms)")
+    ax2.yaxis.grid(True)
+    ax2.legend()
+    plt.tight_layout()
+    plt.savefig(plot_dir+"/"+filename)
+    print("Saved figure to -> "+plot_dir+"/"+filename)
+
 def main():
     get_opts()
     t_pred, t_resp, elem = load_from_file(test_name)
     # Plot t_pred and r_resp in the same graphic
     plot_dir="plots"
     x = list(range(0,len(t_pred)))
-    y = [t_pred,t_resp]
-    label = ["t_pred","t_resp"]
-    plot_graph(x,y,label,0,len(x),"Iterations","Time (ms)","Prediction/Response time for "+
-        elem+" elements",test_name+"-tpred_tresp-"+elem+".png",plot_dir)
-    plot_hist(t_resp,t_pred,test_name+"-tpred_tresp-"+elem+"_hist.png",plot_dir)
+    standard=False
+    if(standard==True):
+        y = [t_pred,t_resp]
+        label = ["t_pred","t_resp"]
+        plot_graph(x,y,label,0,len(x),"Iterations","Time (ms)","Prediction/Response time for "+
+            elem+" elements",test_name+"-tpred_tresp-"+elem+".png",plot_dir)
+        plot_hist(t_resp,t_pred,test_name+"-tpred_tresp-"+elem+"_hist.png",plot_dir)
+    else:
+        t_pred4x, t_resp4x, elem4x = load_from_file("4x_"+test_name)
+        plot_hist2(t_pred,t_pred4x,test_name+"-tpred_tpred4x_hist.png",plot_dir)
 
 if __name__=="__main__":
     main()
